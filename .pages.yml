@@ -1,0 +1,155 @@
+# Configuración de Pages CMS (https://pagescms.org/docs/). Solo expone contenido y fotos;
+# el diseño (src/layouts, src/pages, CSS) no aparece en el panel.
+media:
+  - name: fotos
+    label: Fotografías
+    input: public/uploads
+    output: /uploads
+    extensions: [jpg, jpeg, png, webp]
+    rename: safe
+
+content:
+  - name: servicios
+    label: Servicios
+    type: collection
+    path: src/content/servicios
+    filename: "{primary}.md"
+    format: yaml-frontmatter
+    exclude: ["README.md"]
+    view:
+      primary: nombre
+      fields: [nombre, precio_desde, visible]
+      sort: orden
+      order: asc
+    fields:
+      - name: nombre
+        label: Nombre del servicio
+        type: string
+        required: true
+        description: Aparece como título y en la dirección web (por ejemplo "Comunión").
+        options:
+          maxlength: 60
+      - name: descripcion
+        label: Descripción corta
+        type: text
+        required: true
+        description: Una o dos frases. Se muestra en el listado.
+        options:
+          maxlength: 200
+      - name: precio_desde
+        label: Precio "desde" (€)
+        type: number
+        required: true
+        options:
+          min: 0
+      - name: visible
+        label: Visible en la web
+        type: boolean
+        default: true
+        description: Desactívalo para ocultar el servicio sin borrarlo.
+      - name: orden
+        label: Orden en el listado
+        type: number
+        default: 100
+        description: Número menor = aparece antes.
+        options:
+          min: 0
+      - name: body
+        label: Texto del servicio
+        type: rich-text
+        options:
+          format: markdown
+          switcher: false
+      - name: paquetes
+        label: Paquetes y precios
+        type: object
+        list:
+          collapsible:
+            collapsed: false
+            summary: "{nombre}"
+        fields:
+          - name: nombre
+            label: Nombre del paquete
+            type: string
+            required: true
+          - name: precio
+            label: Precio (€)
+            type: number
+            required: true
+            options:
+              min: 0
+          - name: incluye
+            label: Qué incluye
+            type: text
+            required: true
+      - name: galeria
+        label: Galería de fotos
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "Foto {index}"
+        fields:
+          - name: imagen
+            label: Foto
+            type: image
+            required: true
+            options:
+              media: fotos
+          - name: alt
+            label: Descripción de la foto (accesibilidad)
+            type: string
+            description: Describe qué se ve, para personas que no pueden ver la imagen.
+      - name: seo
+        label: Google y WhatsApp (SEO)
+        type: object
+        fields:
+          - name: titulo
+            label: Título para buscadores
+            type: string
+            options:
+              maxlength: 60
+          - name: descripcion
+            label: Descripción para buscadores
+            type: text
+            options:
+              maxlength: 160
+
+  - name: sitio
+    label: Datos generales
+    type: file
+    path: src/data/sitio.json
+    format: json
+    operations:
+      delete: false
+    fields:
+      - name: nombre
+        label: Nombre del estudio
+        type: string
+        required: true
+      - name: lema
+        label: Frase de portada
+        type: string
+        required: true
+      - name: intro
+        label: Texto de presentación
+        type: text
+      - name: whatsapp
+        label: WhatsApp (solo números, con prefijo 34)
+        type: string
+        required: true
+        pattern:
+          regex: "^[0-9]{9,15}$"
+          message: "Solo números, sin + ni espacios (ej. 34600000000)"
+      - name: ciudad
+        label: Ciudad
+        type: string
+
+settings:
+  content:
+    merge: true
+  commit:
+    templates:
+      create: "contenido: crear {path} (Pages CMS)"
+      update: "contenido: actualizar {path} (Pages CMS)"
+      delete: "contenido: borrar {path} (Pages CMS)"

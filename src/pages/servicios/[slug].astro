@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import sitio from '../../data/sitio.json';
+import { url, euros, whatsapp } from '../../lib';
+
+export async function getStaticPaths() {
+  const servicios = await getCollection('servicios', (s) => s.data.visible);
+  return servicios.map((s) => ({ params: { slug: s.id }, props: { s } }));
+}
+const { s } = Astro.props;
+const { Content } = await render(s);
+const d = s.data;
+const msg = (extra = '') => whatsapp(`Hola, me interesa el servicio ${d.nombre}${extra}.`);
+---
+<Base title={d.seo.titulo ?? `${d.nombre} · ${sitio.nombre}`} description={d.seo.descripcion ?? d.descripcion} image={d.galeria[0]?.imagen}>
+  <p><a href={url('/#servicios')}>← Todos los servicios</a></p>
+  <h1>{d.nombre}</h1>
+  <p>{d.descripcion}</p>
+  <Content />
+  <div class="galeria">
+    {d.galeria.map((g, i) => <img src={url(g.imagen)} alt={g.alt} width="1200" height="800" loading={i === 0 ? 'eager' : 'lazy'} />)}
+  </div>
+  <h2>Paquetes y precios</h2>
+  <table>
+    <thead><tr><th>Paquete</th><th>Incluye</th><th>Precio</th><th></th></tr></thead>
+    <tbody>
+      {d.paquetes.map((p) => (
+        <tr><td>{p.nombre}</td><td>{p.incluye}</td><td>{euros(p.precio)}</td>
+        <td><a href={msg(`, paquete ${p.nombre}`)}>Consultar</a></td></tr>
+      ))}
+    </tbody>
+  </table>
+  <p><a class="btn" href={msg()}>Reservar por WhatsApp</a></p>
+  <p><small>El enlace de WhatsApp envía un mensaje de consulta; no confirma ninguna fecha.</small></p>
+</Base>

@@ -1,0 +1,58 @@
+---
+import sitio from '../data/sitio.json';
+import { url } from '../lib';
+interface Props { title: string; description: string; image?: string }
+const { title, description, image = '/uploads/hero.svg' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(url(image), Astro.site);
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href={url('/')}>{sitio.nombre}</a>
+      <nav aria-label="Principal"><a href={url('/#servicios')}>Servicios</a></nav>
+    </header>
+    <p class="aviso">Demo técnica con datos e imágenes ficticios. Sin relación con ningún estudio real.</p>
+    <main><slot /></main>
+    <footer><p>{sitio.nombre} · {sitio.ciudad} · Prueba de concepto</p></footer>
+    <style is:global>
+      :root { --bg:#faf6f1; --ink:#2f2722; --muted:#6d6158; --accent:#8a4f36; --line:#e4d9cd; }
+      * { box-sizing:border-box; }
+      body { margin:0; background:var(--bg); color:var(--ink); font:18px/1.6 Georgia,'Times New Roman',serif; }
+      img { max-width:100%; height:auto; display:block; }
+      a { color:var(--accent); }
+      a:focus-visible, button:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+      .top { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem 1.25rem; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+      .brand { font-size:1.2rem; text-decoration:none; color:var(--ink); font-weight:bold; }
+      .aviso { margin:0; padding:.5rem 1.25rem; background:#f1e4d3; font:14px/1.4 system-ui,sans-serif; text-align:center; }
+      main, footer { max-width:1000px; margin:0 auto; padding:1.5rem 1.25rem; }
+      footer { color:var(--muted); font:14px system-ui,sans-serif; border-top:1px solid var(--line); margin-top:2rem; }
+      h1 { font-size:clamp(2rem,6vw,3.2rem); line-height:1.15; margin:.2em 0; }
+      .btn { display:inline-block; background:var(--accent); color:#fff; padding:.8rem 1.4rem; border-radius:999px; text-decoration:none; font:600 1rem system-ui,sans-serif; }
+      .grid { display:grid; gap:1.25rem; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+      .card { background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+      .card div { padding:1rem 1.25rem 1.25rem; }
+      .card h2 { margin:.2em 0; font-size:1.4rem; }
+      .precio { font:600 1rem system-ui,sans-serif; color:var(--accent); }
+      table { width:100%; border-collapse:collapse; font-family:system-ui,sans-serif; font-size:16px; }
+      th, td { text-align:left; padding:.7rem .5rem; border-bottom:1px solid var(--line); vertical-align:top; }
+      .galeria { display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); margin:1.5rem 0; }
+      .galeria img { border-radius:8px; aspect-ratio:3/2; object-fit:cover; width:100%; }
+      @media (prefers-reduced-motion:no-preference) { .card { transition:transform .2s; } .card:hover { transform:translateY(-3px); } }
+    </style>
+  </body>
+</html>

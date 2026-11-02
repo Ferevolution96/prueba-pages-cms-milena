@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import sitio from '../data/sitio.json';
+import { url, euros, whatsapp } from '../lib';
+
+const servicios = (await getCollection('servicios'))
+  .filter((s) => s.data.visible)
+  .sort((a, b) => a.data.orden - b.data.orden);
+---
+<Base title={`${sitio.nombre} · ${sitio.lema}`} description={sitio.intro}>
+  <section>
+    <h1>{sitio.lema}</h1>
+    <p>{sitio.intro}</p>
+    <a class="btn" href={whatsapp(`Hola, os escribo desde la web de ${sitio.nombre}.`)}>Escribir por WhatsApp</a>
+  </section>
+  <section id="servicios">
+    <h2>Servicios</h2>
+    <div class="grid">
+      {servicios.map((s) => (
+        <article class="card">
+          {s.data.galeria[0] && <img src={url(s.data.galeria[0].imagen)} alt={s.data.galeria[0].alt} width="1200" height="800" loading="lazy" />}
+          <div>
+            <h2>{s.data.nombre}</h2>
+            <p>{s.data.descripcion}</p>
+            <p class="precio">Desde {euros(s.data.precio_desde)}</p>
+            <a href={url(`/servicios/${s.id}/`)}>Ver servicio</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>
