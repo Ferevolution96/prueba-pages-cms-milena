@@ -1,7 +1,6 @@
 ---
 nombre: Embarazo
-descripcion: Retratos de la espera en estudio o al aire libre. Cambio válido
-  durante el bloqueo (texto ficticio).
+descripcion: Retratos de la espera en estudio o al aire libre (texto ficticio).
 precio_desde: 120
 visible: true
 orden: 2
