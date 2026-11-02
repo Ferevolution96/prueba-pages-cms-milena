@@ -1,188 +1,235 @@
-# Informe PoC — Astro + Pages CMS (estudio fotográfico ficticio)
+# Informe definitivo — Astro + Pages CMS para el Estudio Milena Carrasco
 
-Fecha: 2026-11-02. Astro 7.4.5, Node 24. Web de pruebas: https://ferevolution96.github.io/prueba-pages-cms-milena/
-Repositorio: `ferevolution96/prueba-pages-cms-milena` (público). Panel: app.pagescms.org.
+**AYAVEXA Studio · Prueba de concepto `prueba-pages-cms-milena` · 2 de noviembre de 2026**
+Web de pruebas: https://ferevolution96.github.io/prueba-pages-cms-milena/ · Panel: app.pagescms.org · Horas en Europe/Madrid.
 
-## Resumen
+## Conclusión
 
-| Área | Resultado |
-|---|---|
-| Editar precios, textos, visibilidad y borrar servicios | ✅ Funciona; publicado en 28–53 s (61–83 s con guardados seguidos) |
-| Subir y sustituir fotos ligeras | ✅ Funciona |
-| **Fotos pesadas (3–8 MB)** | ❌ **El panel rechaza toda foto de más de ≈3,2 MB** («Failed to upload file: 413»). La de 3,13 MB sube, pero se sirve sin optimizar |
-| Validaciones | ⚠️ Bloquea texto vacío y precio negativo, pero **un precio vacío se guarda como 0** |
-| Fiabilidad del guardado | ⚠️ Un guardado se perdió sin aviso; la subida de varias fotos a la vez solo subió una |
-| Invitar colaborador sin GitHub | ✅ Invitación por correo enviada |
-| Editar como colaborador | ✅ Funciona (49 s hasta la web). ⚠️ El commit queda firmado por `pages-cms[bot]`, sin rastro de quién editó, y el colaborador puede borrar servicios |
+> ### APTO CON CONDICIONES
+> Astro + Pages CMS es viable para Milena **si AYAVEXA resuelve antes el flujo de fotografías** (el panel rechaza fotos de más de ≈3,2 MB y la web las sirve sin optimizar) y **deja aplicadas las protecciones que ya se han probado** en este repositorio (sin borrar servicios, autoría por usuario, precios mínimos validados en la compilación). Con eso, el día a día de Milena (precios, paquetes, textos, ocultar y crear sesiones) funciona sin GitHub y se publica en menos de un minuto.
+>
+> Si Milena necesita subir galerías grandes directamente desde la cámara o el móvil sin ningún paso previo, **WordPress sería mejor para ella**.
 
-**Veredicto:** Pages CMS es suficientemente sencillo para el día a día de Milena (cambiar precios, textos y fotos), pero **no se puede entregar tal cual a una fotógrafa**: no admite fotos de cámara y tiene tres fallos que pueden publicar datos erróneos o perder cambios. El acceso de colaborador sin GitHub funciona. Ver la sección 6.
+Justificación en la sección 9.
 
 ---
 
-## 1. Método
+## 1. Pruebas realizadas, resultados y evidencias
 
-- Pruebas ejecutadas por Claude desde Chrome (Claude in Chrome) en app.pagescms.org: sesiones 1 y 2 con la cuenta propietaria; sesión 3 con la cuenta de colaborador (fercod1496@gmail.com). El inicio de sesión del colaborador (correo + código y aceptación de los términos de Pages CMS) lo hizo Fernando. Horas en Europe/Madrid.
-- Para cada prueba se registró: hora del guardado, commit en GitHub, ejecución del workflow «Deploy» (duración = creación del run → fin del job deploy) y el **primer momento en que el HTML servido por GitHub Pages contenía el cambio** (consulta sin caché cada 3–5 s), confirmado después recargando la página en el navegador.
-- «Workflow en verde» no se tomó como prueba de publicación: se midió siempre sobre la web.
-- Datos y fotos: todo ficticio o libre. Fotos usadas: capturas de la propia web, dos tarjetas de AYAVEXA (material propio) y fotos CC0 de Wikimedia Commons sin personas (sección 3).
+Todas las pruebas se ejecutaron de verdad desde Chrome (Claude in Chrome) contra el panel real y la web publicada. «Visible» es el primer momento en que el HTML servido por GitHub Pages contenía el cambio (consulta sin caché cada 3–5 s), confirmado después recargando en el navegador. El inicio de sesión del colaborador (correo, código y aceptación de los términos) lo hizo Fernando.
 
-## 2. Pruebas de contenido (sesión 1, 16:45–17:05)
+### 1.1 Contenido (propietario, 16:45–17:05)
 
-| # | Prueba | Guardado | Commit | Workflow | Visible en la web | Tiempo real | Resultado |
+| # | Prueba | Guardado | Commit | Workflow | Visible | Tiempo | Resultado |
 |---|---|---|---|---|---|---|---|
-| 1a | Newborn: precio «desde» 150 → 165 € | 16:45:07 | `fb97987` | #8 ✅ 46 s | 16:45:52 | **45 s** | OK |
-| 1b | Newborn: paquete «Mini» 150 → 165 € | 16:48:35 | `1d3db9c` | #10 ✅ 35 s | 16:49:11 | **36 s** | OK (ficha del servicio) |
-| 2 | Embarazo: editar descripción corta | 16:46:58 | `087fbfb` | #9 ✅ 49 s | 16:47:45 | **47 s** | OK en listado y ficha |
-| 3a | Comunión: «Visible» → No | 16:49:37 | `d63bf8a` | #11 ✅ 31 s | 16:50:05 | **28 s** | OK: desaparece del listado **y** su URL devuelve 404 |
-| 3b | Comunión: «Visible» → Sí | 16:51:08 | — | — | — | — | ❌ **Guardado perdido sin aviso** (sin commit; al recargar seguía en No) |
-| 3b′ | Reintento de 3b | 16:52:37 | `107b92a` | #12 ✅ 35 s | 16:53:13 | **36 s** | OK: vuelve al listado y la URL da 200 |
-| 4a | Subir captura de la web (46 KB) | 16:53:41 | `3d09fb7` | #13 ⛔ cancelado | — | — | OK |
-| 4b | Embarazo: sustituir Foto 2 por la captura | 16:54:33 | `24f66ab` | #14 ✅ 79 s | 16:55:46 | **73 s** | OK, la imagen carga |
-| 4c | Subir 2 imágenes a la vez | 16:57:01 | `16496e7` | #15 ⛔ cancelado | — | — | ⚠️ **Solo se subió una**, sin avisar |
-| 4d | Subir la segunda por separado | 16:57:27 | `ad883c8` | #16 ✅ 45 s | — | — | OK |
-| 4e | Newborn: sustituir Foto 1 por la tarjeta AYAVEXA | 16:58:36 | `025b388` | #17 ✅ 63 s | ≤ 16:59:37 | **≤ 61 s** | OK. La Foto 1 es también la miniatura de la portada |
-| 5a | Descripción obligatoria vacía | — | — | — | — | — | ✅ Bloquea: «This field is required» |
-| 5b | Precio negativo (−5) | — | — | — | — | — | ✅ Bloquea (validación del navegador) |
-| 5c | Precio con letras («abc») | — | — | — | — | — | ✅ El campo no admite letras |
-| 5d | Precio obligatorio **vacío** | 17:01:01 | `5dda453` | #18 ⛔ cancelado | No llegó a publicarse | — | ❌ **Se guarda como `precio_desde: 0`**. Restaurado a 115 a las 17:01:18 (`134e4cc`) |
-| 6 | Eliminar el servicio ficticio «Familiares» | 17:02:46 | `b42cd31` | #20 ✅ 92 s | 17:04:09 | **83 s** | OK: borra solo `familiares.md`; listado y URL (404) correctos |
-| C1 | Invitar colaborador (fercod1496@gmail.com) | 17:04:57 | — | — | — | — | ✅ Solo pide un correo; no exige cuenta de GitHub |
+| 1a | Newborn: precio «desde» 150 → 165 € | 16:45:07 | `fb97987` | #8 ✅ 46 s | 16:45:52 | 45 s | ✅ |
+| 1b | Newborn: paquete «Mini» 150 → 165 € | 16:48:35 | `1d3db9c` | #10 ✅ 35 s | 16:49:11 | 36 s | ✅ |
+| 2 | Embarazo: descripción | 16:46:58 | `087fbfb` | #9 ✅ 49 s | 16:47:45 | 47 s | ✅ listado y ficha |
+| 3a | Comunión: Visible → No | 16:49:37 | `d63bf8a` | #11 ✅ 31 s | 16:50:05 | 28 s | ✅ fuera del listado y URL 404 |
+| 3b | Comunión: Visible → Sí | 16:51:08 | — | — | — | — | ❌ guardado perdido sin aviso |
+| 3b′ | Reintento | 16:52:37 | `107b92a` | #12 ✅ 35 s | 16:53:13 | 36 s | ✅ |
+| 5a–c | Texto vacío / precio −5 / letras | — | — | — | — | — | ✅ bloqueados |
+| 5d | Precio vacío | 17:01:01 | `5dda453` | #18 ⛔ cancelado | no publicado | — | ❌ se guardó como `0` |
+| 6 | Borrar el servicio ficticio «Familiares» | 17:02:46 | `b42cd31` | #20 ✅ 92 s | 17:04:09 | 83 s | ✅ |
 
-## 3. Prueba de fotos pesadas (sesión 2, 17:24–17:30)
+### 1.2 Fotografías
 
-Fotos libres (licencia **CC0**, dominio público) de Wikimedia Commons, sin personas ni marcas:
+| Prueba | Usuario | Hora | Evidencia | Resultado |
+|---|---|---|---|---|
+| Subir capturas y tarjetas AYAVEXA (21–46 KB) | Propietario | 16:53–16:57 | `3d09fb7`, `ad883c8`, `16496e7` | ✅ (subiendo 2 a la vez solo subió 1) |
+| Sustituir foto de galería (Embarazo F2, Newborn F1) | Propietario | 16:54 / 16:58 | `24f66ab` (73 s), `025b388` (≤61 s) | ✅ |
+| Fotos CC0 de Wikimedia Commons: 6,18 / 3,83 / 3,62 / 3,24 MB | Propietario | 17:25–17:27 | «Failed to upload file: 413» | ❌ rechazadas |
+| Foto CC0 de 3,13 MB | Propietario | 17:26:12 | `dc68329` | ✅ |
+| Sustituir Embarazo F3 por la de 3,13 MB | Propietario | 17:28:03 | `ffb10f0`, #23 55 s, visible 17:28:56 | ✅ 53 s; servida **sin optimizar** (3.286.809 bytes para una miniatura de 312×208 px) |
+| Subir imagen generada de 0,45 MB | **Colaborador** | 18:01:13 | `d40f300` | ✅ ≈3 s |
+| Subir imagen generada de 2,92 MB | **Colaborador** | 18:01:19 | `fe49233` | ✅ ≈5 s |
+| Subir imagen generada de 5,21 MB | **Colaborador** | 18:01:31 | «Failed to upload file: 413» | ❌ mismo límite |
+| Sustituir Newborn F2 por la de 0,45 MB | **Colaborador** | 18:02:24 | `31a031c`, #29 77 s, visible 18:03:42 | ✅ 78 s (en cola tras 2 subidas) |
+| Enlaces rotos | — | 18:04 | Rastreo de 4 páginas y 11 recursos | ✅ todos 200 |
+| Archivos antiguos | — | 18:04 | API de GitHub | ⚠️ 7 archivos sin uso siguen publicados |
+| Borrar foto sin uso desde la biblioteca | **Colaborador** | 18:04:48 | aviso «deleted successfully» | ✅ desaparece de la web, pero **sigue en el historial** (repositorio: 6,9 MB tras el borrado) |
 
-| Foto (nombre en Commons → nombre subido) | Autor | Peso | Resolución |
+### 1.3 Colaborador sin GitHub (fercod1496@gmail.com)
+
+| Prueba | Hora | Evidencia | Resultado |
 |---|---|---|---|
-| Yellow hawkweed flowers in Gåseberg → `flores-amarillas-cc0.jpg` | W.carter | 6,18 MB | 4378×3283 |
-| New oak leaves with female flowers → `roble-hojas-cc0.jpg` | W.carter | 5,41 MB | 3720×2790 |
-| A banch of flowers 0001 → `flores-ramo-cc0.jpg` | Iurie Nistor | 3,83 MB | 6256×4172 |
-| Flowers from Ciocana → `flores-ciocana-cc0.jpg` | Iurie Nistor | 3,13 MB | 6256×4172 |
+| Invitación por correo | 17:04:57 | Panel «Collaborators» | ✅ solo pide correo |
+| Abrir el enlace de invitación | 17:37:39 | «Invite unavailable» | ❌ caducado o consumido, sin explicación |
+| Iniciar sesión con correo y código | ~17:40 | — | ✅ sin GitHub |
+| Qué ve | 17:40 | Captura | ✅ solo este repositorio; sin Actions, Collaborators ni Configuration |
+| Editar Comunión | 17:41:27 | `b0fe799`, #25 51 s, visible 17:42:16 | ✅ 49 s, firmado por `pages-cms[bot]` (antes de la corrección) |
+| Crear sesión «Bautizo de prueba» | 18:13:46 | `77b1dcc`, #37, visible 18:15:11 | ✅ 85 s; URL limpia `/servicios/bautizo-de-prueba/` (borrada después: `4544b28`) |
 
-Las fotos se descargaron en el propio navegador y se subieron una a una por el botón de subida del panel (la subida múltiple falla, ver 4c).
+### 1.4 Permisos aplicados y verificados (commit `680161a`, 18:24)
 
-### 3.1 Subida
-
-| Hora | Archivo | Peso | Resultado |
-|---|---|---|---|
-| 17:25:10 | `flores-amarillas-cc0.jpg` | 6,18 MB | ❌ «Failed to upload file: 413» |
-| 17:25:19 | `flores-ramo-cc0.jpg` | 3,83 MB | ❌ 413 |
-| 17:26:12 | `flores-ciocana-cc0.jpg` | 3,13 MB | ✅ Subida en ≈2 s (commit `dc68329`, 17:26:14; run #22 ✅ 56 s) |
-| ~17:27 | `limite-362-cc0.jpg` (la de 3,83 MB recomprimida) | 3,62 MB | ❌ 413 |
-| ~17:27 | `limite-324-cc0.jpg` (la de 3,83 MB recomprimida) | 3,24 MB | ❌ 413 |
-
-**Límite real del panel: entre 3,13 MB (sube) y 3,24 MB (falla).** Los resultados encajan con un tope de unos 4,5 MB por petición en el servidor de Pages CMS, sobre el archivo ya codificado (≈ +33 %). Es una deducción a partir de las medidas, no un dato oficial. La subida rechazada no deja rastro en el repositorio. El error solo muestra «413», sin explicación.
-
-**Consecuencia:** una foto normal de cámara (5–15 MB) o de móvil moderno (3–8 MB) **no se puede subir**. Milena tendría que reducirlas antes, y el panel no le diría cuánto.
-
-### 3.2 Publicación y peso servido
-
-| Prueba | Guardado | Commit | Workflow | Visible | Tiempo real |
-|---|---|---|---|---|---|
-| Embarazo: sustituir Foto 3 por `flores-ciocana-cc0.jpg` (3,13 MB) | 17:28:03 | `ffb10f0` | #23 ✅ 55 s (build 15 s) | 17:28:56 | **53 s** |
-
-- La foto pesada **no ralentiza la compilación** (build de 15 s, igual que con fotos ligeras).
-- **La web la sirve sin optimizar**: el visitante descarga **3.286.809 bytes** (3,13 MB) de una imagen de 6256×4172 px que se muestra a **312×208 px**. Con varias fotos así, una ficha pesaría decenas de MB en el móvil. Las imágenes de `public/uploads/` se copian tal cual; no hay redimensionado ni formato moderno (WebP/AVIF).
-- Cada foto subida queda para siempre en el historial del repositorio, aunque luego se quite de la galería.
-
-### 3.3 Fotos adjuntadas en el chat
-
-Las dos fotos enviadas por Fernando (manos y pies) **no se usaron**: pesan 81 KB y 151 KB (no sirven para la prueba de peso), muestran a personas reales y no constaba su licencia. Se sustituyeron por las fotos CC0 anteriores, a petición suya.
-
-## 3b. Prueba de colaborador sin cuenta de GitHub (sesión 3, 17:37–17:43)
-
-| Paso | Hora | Resultado |
+| Medida en `.pages.yml` | Comprobación | Resultado |
 |---|---|---|
-| Invitación enviada desde «Collaborators» | 17:04:57 | ✅ Solo pide un correo. Llega un correo en inglés de no-reply@mail.pagescms.org con un enlace de acceso |
-| Abrir el enlace de la invitación | 17:37:39 | ❌ «Invite unavailable – This invitation is no longer available». Probablemente se consumió en un intento anterior de acceso (había un correo de «código temporal» de las 17:22) o caducó; el panel no explica el motivo |
-| Iniciar sesión como colaborador | ~17:40 | ✅ Pantalla «Sign in to Pages CMS» → correo → código de un solo uso enviado al buzón. **No necesita cuenta de GitHub** |
-| Qué ve el colaborador | 17:40 | ✅ Solo el repositorio al que fue invitado (no los demás del propietario). Menú: Servicios, Datos generales y Fotografías; **no** ve Actions, Collaborators ni Configuration |
-| Qué puede hacer | 17:42 | ⚠️ Editar, crear («Add an entry»), **renombrar y borrar** servicios (no se probó a borrar) |
-| Editar la descripción de Comunión | guardado 17:41:27 | ✅ Commit `b0fe799`, run #25 ✅ 51 s, visible en la web 17:42:16 → **49 s**. Confirmado recargando la portada |
-| Autoría del cambio en Git | — | ⚠️ Autor del commit: **`pages-cms[bot]`** (actor del workflow también el bot). Los cambios del propietario aparecen como «Fernando». En el historial de Git **no queda qué colaborador hizo el cambio** |
+| `operations: { delete: false, rename: false }` en `servicios` | Menú del colaborador | ✅ Rename y Delete desaparecen; «Add an entry» sigue |
+| Lo mismo | Petición directa a la API de Pages CMS como colaborador para borrar un servicio (archivo inexistente, sin riesgo) | ✅ **HTTP 403** «Deleting entries isn't allowed for "servicios"»: el bloqueo es del servidor, no solo del botón |
+| `settings.commit.identity: user` + plantillas con `{userEmail}` | Edición de Embarazo como colaborador, 18:25:34 | ✅ commit `f5aab1f` con autor `fercod1496@gmail.com` y el correo en el mensaje; visible 18:26:30 (56 s) |
+| `min: 1` en los precios del panel | Configuración publicada | Aplicado; el bloqueo real lo da la compilación (1.5) |
 
-Al cerrar la sesión del propietario para entrar como colaborador, hay que volver a iniciar sesión con «Sign in with GitHub» para recuperar el acceso de administrador.
+### 1.5 Seguridad y recuperación
 
-## 4. Errores y dificultades encontrados
+| Prueba | Hora | Evidencia | Resultado |
+|---|---|---|---|
+| Historial en el panel | 18:05 | Botón de reloj del editor | ⚠️ muestra los 3 últimos cambios y enlaza a GitHub; **no permite restaurar** |
+| Error simulado: Embarazo 120 → 12 € (colaborador) | 18:05:51 | `66eeddd`, visible 18:06:27 | ⚠️ el error llega a la web en 36 s; no hay revisión previa |
+| Recuperar la versión anterior desde el historial de GitHub | 18:07:09 | `385a013` (contenido de `ffb10f0`), web correcta ≤18:07:43 | ✅ ≤34 s |
+| Validación en la compilación: precios `.min(1)` en `src/content.config.ts` | ~18:08 | `e8efd58`, #33 ✅ | ✅ aplicada |
+| Precio vacío guardado desde el panel (se convierte en 0) | 18:10:06 | `e977b91`, #34 ❌ en «npm test» (16 s), despliegue omitido | ✅ **la web siguió intacta** («Desde 115 €», 4 páginas con 200) |
+| Cambio válido mientras el 0 sigue en el repositorio | 18:11:20 | `fbc1247`, #35 ❌ | ⚠️ **tampoco se publica**, aunque el panel dice «saved successfully» |
+| Corregir el precio desde el panel | 18:12:21 | `7bee826`, #36 ✅, visible 18:13:00 | ✅ 39 s; se publican los dos cambios pendientes |
 
-1. **Bloqueante para una fotógrafa — límite de ≈3,2 MB por foto** con un error incomprensible («Failed to upload file: 413»).
-2. **Fotos servidas sin optimizar** (3,13 MB para una miniatura).
-3. **Precio vacío = 0 €.** Un campo `number` obligatorio vacío se guarda como `0`. El esquema de Astro (`z.number().min(0)`) lo acepta, así que la web habría mostrado «Desde 0 €». No se publicó solo porque el despliegue se canceló al llegar la corrección.
-4. **Guardado perdido en silencio** al guardar justo después de cambiar un interruptor: sin commit, sin error y sin aviso. Al reintentarlo funcionó.
-5. **Subida múltiple incompleta**: de dos archivos, solo subió uno, sin avisar.
-6. Botones, avisos y errores del panel en inglés («Save», «This field is required», «Please fix the errors…», «Failed to upload file: 413»), aunque las etiquetas de los campos estén en español. El aviso de error siguió visible tras corregir el campo.
-7. Sin previsualización ni borrador: cada guardado se publica.
-8. Con guardados seguidos, el workflow cancela el despliegue anterior y solo publica el último: el resultado final es correcto, pero tarda 61–83 s en verse.
-9. La Foto 1 de cada galería es también la miniatura de la portada, y el panel no lo indica.
-10. Quitar una foto de la galería no la borra de la biblioteca ni del repositorio.
-11. Un servicio oculto o borrado muestra el 404 genérico de GitHub.
-12. Las imágenes SVG originales no aparecen en la biblioteca «Fotografías» (solo admite jpg/png/webp).
-13. El enlace de invitación dejó de valer («Invite unavailable») sin indicar el motivo ni ofrecer reenviarla; la clienta tendría que entrar por «Sign in» con su correo.
-14. Los cambios de un colaborador se firman como `pages-cms[bot]`: en Git no queda constancia de quién editó. Si hay varias personas editando, no se puede saber quién hizo qué desde GitHub.
-15. Un colaborador puede borrar servicios (con confirmación). No hay un rol de «solo editar».
-16. El correo de invitación, la pantalla de acceso y los avisos están en inglés.
+Estado final de la web (18:27): Newborn 165 €, Embarazo 120 €, Comunión 115 €; todas las páginas responden 200.
 
-## 5. No probado o pendiente (no se afirma que funcione)
+## 2. Tiempos reales de publicación
 
-- Subida de fotos y borrado de servicios desde la cuenta de colaborador.
-- Si Pages CMS muestra en algún sitio (fuera de Git) qué colaborador hizo cada cambio.
-- Lote de 30–50 fotos reales (con el límite actual no se podrían subir sin reducirlas antes).
+| Situación | Guardado → visible | Workflow |
+|---|---|---|
+| Cambio aislado de texto, precio o visibilidad | **28–56 s** (mediana ≈40 s) | 31–51 s |
+| Foto ya subida, sustituida en una galería | 53 s | 55 s |
+| Crear una sesión nueva | 85 s | build más lento ese día (54 s) |
+| Varios guardados seguidos (el workflow cancela el anterior y publica el último) | 61–83 s | — |
+| Recuperación desde GitHub | ≤34 s | — |
+| Subida de una foto al panel | 2–5 s (sin publicar hasta que se usa y se guarda) | — |
+
+## 3. Pruebas pendientes o bloqueadas
+
+- **Fotos de cámara de 3–8 MB: bloqueadas** por el límite de subida del panel (≈3,2 MB). No se pueden probar «tal cual» con Pages CMS alojado.
+- Lote de 30–50 fotos reales y tamaño del repositorio resultante.
 - Uso del panel desde el móvil.
-- Restaurar una versión anterior desde el panel.
-- Validación del campo WhatsApp en el panel y precios con decimales.
-- Página de datos generales.
+- Validación del campo WhatsApp y página «Datos generales» en el panel.
+- Precios con decimales.
+- Despliegue real en IONOS (no hay autorización ni acceso; sección 7 solo es análisis).
+- Inventario de URLs del WordPress actual (no se conoce el dominio).
+- Qué ve Milena si una compilación falla: no hay aviso en el panel; GitHub envía correo «Run failed» solo a la cuenta propietaria (se vieron estos correos en su bandeja).
 
-## 6. ¿Es suficientemente sencillo para Milena?
+## 4. Riesgos encontrados
 
-**Para textos y precios, sí.** Son 3–5 clics en formularios con etiquetas en español, y el cambio aparece en menos de un minuto.
+| Riesgo | Gravedad | Estado |
+|---|---|---|
+| Fotos de cámara rechazadas (413) con un error incomprensible | Alta | **Abierto**: requiere solución (sección 6) |
+| Fotos servidas sin optimizar (MB por miniatura) | Alta | Abierto |
+| Un dato inválido bloquea **todas** las publicaciones siguientes sin que Milena lo vea | Alta | Mitigable: aviso de fallo a AYAVEXA y validación en el panel |
+| Precio vacío guardado como 0 | Media | **Mitigado**: la compilación lo rechaza y la web no cambia |
+| Guardado perdido sin aviso (1 vez en ≈25 guardados) | Media | Abierto; instruir a Milena para esperar el aviso verde |
+| Borrar una foto en uso deja la imagen rota (el diálogo no comprueba si se usa, verificado en el código fuente) | Media | Abierto; no hay `operations` para la biblioteca de fotos |
+| Colaborador podía borrar o renombrar servicios | Media | **Resuelto** con `operations` (403 en servidor) |
+| Cambios firmados por `pages-cms[bot]` | Media | **Resuelto** con `identity: user` |
+| Los errores se publican al instante (sin borrador ni revisión) | Media | Asumido; recuperación en ≈30 s desde GitHub |
+| Dependencia del servicio alojado app.pagescms.org (gratuito, sin contrato) | Media | Alternativa: autoalojarlo (licencia MIT) |
+| Historial público: todo lo subido queda visible para siempre | Media | Usar repositorio privado en producción |
+| Avisos de mantenimiento en el workflow: acciones en Node.js 20 obsoletas y `ubuntu-latest` migrando a Ubuntu 26 desde el 19/10/2026 | Baja | Actualizar versiones de las acciones |
 
-**Para fotos, no tal cual.** Una fotógrafa sube fotos de cámara; con el límite de ≈3,2 MB y un error en inglés sin explicación, se atascaría en la tarea que más hará. Además, aunque las reduzca, la web las serviría enormes.
+## 5. Limitaciones de Pages CMS (versión alojada, comprobadas)
 
-**Riesgos de fiabilidad:** el precio a 0 €, el guardado perdido y la subida múltiple incompleta hacen que hoy no se pueda dar acceso a una clienta sin antes poner protecciones.
+1. **Subida máxima ≈3,2 MB por archivo.** El panel envía la foto codificada en base64 (verificado en su código fuente) y el servidor rechaza la petición con 413. Coincide con el límite de 4,5 MB por petición de las funciones de Vercel: es una deducción técnica, no un dato publicado por Pages CMS.
+2. Sin redimensionado ni optimización de imágenes.
+3. Sin borrador ni previsualización; sin restauración de versiones desde el panel.
+4. Permisos solo por colección (`create`, `rename`, `delete`) y **iguales para todos los usuarios**: no hay roles. No existe restricción equivalente para borrar fotos de la biblioteca.
+5. Interfaz, correos y errores en inglés; solo las etiquetas de los campos son personalizables.
+6. Subida múltiple poco fiable (de 2 archivos subió 1).
+7. Invitaciones que caducan o se consumen sin explicación.
+8. Borrar una foto no comprueba si se está usando.
 
-## 7. Qué necesita AYAVEXA para entregarlo a una clienta real
+## 6. Soluciones técnicas viables
 
-1. **Resolver las fotos** (lo más importante). Opciones, de menos a más trabajo:
-   - Guía y herramienta para que Milena exporte las fotos a JPG de ~2500 px y ≤ 2,5 MB antes de subirlas (por ejemplo, un preajuste en su programa de edición).
-   - Optimización en el build: generar en la compilación versiones redimensionadas y WebP/AVIF, en lugar de servir `public/uploads/` tal cual. Reduce el peso servido, pero **no** quita el límite de subida del panel.
-   - Alojar las galerías en un servicio de imágenes con su propio subidor; el CMS guardaría solo la URL.
-2. **Blindar precios**: `precio_desde` y `precio` con `.min(1)` (o vacío explícito → «Consultar»), para que un 0 accidental rompa el build y la web quede como estaba.
-3. **Procedimiento de comprobación** para la clienta: esperar el aviso verde «saved successfully»; si no aparece, volver a guardar; subir las fotos de una en una; mirar la web al minuto.
-4. **Acceso de la clienta**: el acceso por correo sin GitHub funciona. Falta decidir la titularidad del repositorio y de las cuentas, explicar a la clienta que entra por «Sign in» con su correo y un código (el enlace de invitación puede caducar), y asumir que puede borrar servicios y que en Git sus cambios aparecen como `pages-cms[bot]`.
-5. Página 404 propia e indicar en el panel que la Foto 1 es la portada del servicio.
-6. Guía breve en español con capturas, traduciendo los mensajes en inglés más comunes.
-7. Avisos de fallo del workflow: GitHub ya envía correos «Run failed» a la cuenta propietaria (se vieron en su bandeja); decidir quién los recibe en AYAVEXA y cómo se revierte un cambio.
-8. Pendientes de la fase anterior: textos legales y privacidad, imágenes con licencia, costes y dominio. El repositorio es público: todo lo que se suba (incluidas fotos de clientes) queda visible en el historial.
+| Problema | Solución | Estado |
+|---|---|---|
+| Borrar o renombrar servicios | `operations: { delete: false, rename: false }` | ✅ Probado (403 en servidor) |
+| Autoría de los cambios | `settings.commit.identity: user` + `{userEmail}` en las plantillas | ✅ Probado |
+| Precios 0 o vacíos | `.min(1)` en el esquema de Astro: la compilación falla y la web no cambia | ✅ Probado |
+| Peso servido de las fotos | Optimizar en la compilación: generar tamaños y WebP/AVIF. Astro solo optimiza imágenes de `src/` (las de `public/` se copian tal cual), así que habría que mover la biblioteca a `src/` con el helper `image()` o añadir un paso con `sharp` en el workflow | Por implementar |
+| Límite de subida de 3,2 MB | a) Preajuste de exportación para Milena (JPG ~2500 px, ≤2,5 MB); b) autoalojar Pages CMS sin ese límite (por verificar); c) galerías en un servicio de imágenes externo | **Decisión pendiente** |
+| Bloqueo silencioso tras un dato inválido | Avisos de fallo del workflow a AYAVEXA (correo o notificación) y procedimiento de corrección | Por configurar |
+| Fotos huérfanas | Revisión periódica por AYAVEXA (script que liste archivos sin uso) | Por implementar |
+| Idioma | Guía breve en español con capturas y glosario de botones | Por redactar |
+
+## 7. Arquitectura propuesta para producción (análisis, sin acceso al hosting de Milena)
+
+**Flujo:** Milena edita en Pages CMS → commit en un repositorio **privado** de GitHub → GitHub Actions compila Astro (con validación y optimización de fotos) → si todo va bien, sube la web estática por **SFTP** al hosting de IONOS. Si la compilación falla, no se sube nada.
+
+- **SFTP en IONOS:** el hosting Linux de IONOS ofrece SFTP por el puerto 22 con un servidor propio por contrato; los contratos desde el 29/08/2024 crean cuentas «SFTP/SSH» y los anteriores usan un usuario SFTP principal. **Hay que confirmar qué tarifa tiene Milena** (Piensa Solutions pertenece a IONOS). Las credenciales irían como *secrets* del repositorio.
+- **Automatización:** paso de despliegue en el mismo workflow (cliente SFTP en el runner, sin acciones de terceros). Riesgo: durante la subida la web puede quedar a medias unos segundos. Si hay SSH, mitigar subiendo a una carpeta nueva y cambiando el destino al final.
+- **Dominio y correo:** si la web sigue en el mismo hosting, **no hace falta tocar los DNS**; el correo (registros MX) no se ve afectado. Antes de sustituir WordPress: exportación completa y copia de seguridad de ficheros y base de datos.
+- **Redirecciones:** el hosting Linux de IONOS admite `.htaccess` con redirecciones 301 (`RedirectPermanent`). Habrá que inventariar las URLs actuales de WordPress (sitemap) y generar el `.htaccess` desde el repositorio.
+- **Copias de seguridad:** el repositorio de Git es una copia completa con historial. IONOS además hace copias diarias del espacio web con unos 14 días de retención según su ayuda (la propia página indica también 6 días en su resumen; confirmar).
+- **Formularios:** una web estática no procesa formularios. Opciones: el botón de WhatsApp actual, un script PHP mínimo en el propio hosting de IONOS (si el plan incluye PHP, como es habitual en su hosting Linux) o un servicio externo de formularios (comprobar precio y RGPD).
+- **Fotos:** optimización en la compilación (sección 6) para que el visitante descargue cientos de KB y no varios MB.
+- **Límites de GitHub para galerías** (documentación oficial): repositorio idealmente < 1 GB y < 5 GB «muy recomendado»; archivos > 100 MiB bloqueados (> 50 MiB avisa; 25 MiB desde el navegador). Cada foto subida y luego sustituida sigue ocupando espacio en el historial. Ejemplo: 400 fotos de 2,5 MB ≈ 1 GB. Si se usara GitHub Pages: sitio ≤ 1 GB y ancho de banda «blando» de 100 GB/mes. Con IONOS, el límite de la web lo marca su plan.
+
+## 8. Costes
+
+| Concepto | Coste | Fuente / nota |
+|---|---|---|
+| Pages CMS (versión alojada) | 0 € | Su web: «100% free», licencia MIT. Sin SLA |
+| GitHub, repositorio privado | 0 € | Plan Free: 12 USD/mes de cómputo de Actions incluidos (≈2.000 min Linux). Cada publicación consume ≈1–2 min; de sobra para el uso previsto |
+| GitHub, repositorio público | 0 € | Actions gratis en públicos, pero el contenido y su historial quedan visibles |
+| Hosting, dominio y correo | El que ya paga Milena en IONOS | Plan y precio desconocidos: **por confirmar** |
+| Formulario de contacto | 0 € (PHP propio) o el plan del servicio externo | Por decidir |
+| Mantenimiento de AYAVEXA | Horas por definir | Dependencias de Astro y acciones, vigilancia del workflow, correcciones de contenido, gestión de fotos y accesos |
+
+## 9. Comparación con WordPress
+
+| Criterio | Astro + Pages CMS | WordPress |
+|---|---|---|
+| Editar precios, paquetes y textos | ✅ 3–5 pasos, formularios limitados a lo necesario | ✅ más opciones, más fácil equivocarse |
+| Subir fotos de cámara | ❌ máx. ≈3,2 MB; hay que reducirlas antes | ✅ subida grande y redimensionado automático |
+| Optimización de fotos | Hay que programarla | Integrada |
+| Previsualizar antes de publicar | ❌ | ✅ |
+| Restaurar versiones | Solo AYAVEXA, desde GitHub (≈30 s) | Revisiones en el propio editor |
+| Seguridad y mantenimiento | Web estática: sin base de datos ni plugins que actualizar | Actualizaciones constantes y superficie de ataque mayor |
+| Rendimiento | Excelente si las fotos se optimizan | Depende de plugins y caché |
+| Riesgo de romper el diseño | Muy bajo: Milena no ve el diseño | Medio |
+| Idioma del panel | Parcialmente en inglés | Español |
+| Coste | 0 € de software; hosting actual | Hosting actual + plugins de pago habituales |
+| Dependencias | GitHub + app.pagescms.org | Hosting propio |
+
+**Por qué «APTO CON CONDICIONES» y no «APTO»:** en una fotógrafa, la tarea más frecuente es subir fotos, y es justo la que falla tal cual (pruebas de 1.2). **Por qué no «NO RECOMENDADO»:** todo lo demás funcionó en pruebas reales, y los tres problemas de seguridad encontrados (borrado de servicios, autoría anónima, precio 0) se han resuelto y verificado en este repositorio. El problema de las fotos tiene soluciones conocidas, pero cuestan trabajo o un paso extra para Milena.
+
+## 10. Experiencia de Milena (evaluación)
+
+| Operación | Pasos medidos | Puntos confusos |
+|---|---|---|
+| Cambiar un precio | 4: Servicios → Editar → escribir → Guardar | Ninguno relevante; esperar ~1 min para verlo |
+| Editar un paquete | 4–5 (+2 para añadir uno: «Add an item») | Los paquetes se despliegan dentro del formulario largo |
+| Modificar un texto | 3–4 | Ninguno |
+| Ocultar una sesión | 3: Editar → interruptor «Visible» → Guardar | Un guardado se perdió una vez sin aviso |
+| Crear una sesión | 5 como mínimo (Add an entry → nombre, descripción, precio → Guardar); más si añade paquetes y fotos | «Orden en el listado» puede no entenderse |
+| Añadir o sustituir una foto | 7–8: Editar → bajar a la galería → abrir «Foto N» → quitar la actual (icono pequeño) → Select/Upload → elegir → texto alternativo → Guardar | **El más confuso:** las fotos están plegadas como «Foto 1/2/3» sin miniatura; hay que borrar antes de sustituir; la Foto 1 es también la portada; error «413» si pesa demasiado |
+| Publicar | 0 pasos extra: se publica al guardar, sin usar GitHub | No hay aviso si la publicación falla |
+
+**Interfaz en inglés:** es un inconveniente **moderado**, no bloqueante. Las etiquetas y ayudas de los campos están en español (las define AYAVEXA), pero los botones (Save, Add an item, Upload, Select, Delete), los avisos, los errores, el correo de invitación y la pantalla de acceso están en inglés. Con una guía de una página y un glosario de 10 palabras es asumible. El problema real son los mensajes de error («Failed to upload file: 413», «Invite unavailable»), que no explican qué hacer.
+
+## 11. Decisiones a consultar con Milena
+
+1. **Fotos:** ¿acepta exportar las fotos reducidas (≤2,5 MB) antes de subirlas, o necesita subir directamente desde cámara o móvil? Esta respuesta decide entre Pages CMS y WordPress.
+2. ¿Cuántas fotos por galería y con qué frecuencia las actualiza?
+3. ¿Quién será la titular de las cuentas (GitHub, IONOS, dominio)? ¿AYAVEXA o ella?
+4. ¿Con qué correo accederá al panel? ¿Habrá más personas editando?
+5. ¿Puede crear sesiones nuevas ella sola, o prefiere pedirlo a AYAVEXA?
+6. ¿Le basta con que los cambios se publiquen al guardar, sin previsualización?
+7. Datos de su contrato con IONOS/Piensa Solutions: tarifa, acceso SFTP/SSH, PHP, espacio y fecha de alta.
+8. Formulario de contacto: ¿WhatsApp es suficiente o quiere un formulario? ¿Qué datos pedirá (RGPD)?
+9. ¿Qué URLs del WordPress actual tienen tráfico o posicionamiento que haya que conservar?
+10. Mantenimiento: qué incluye la cuota de AYAVEXA y el tiempo de respuesta si una publicación falla.
+11. Textos legales, política de privacidad y licencias de las fotos.
 
 ---
 
-## Anexo A. Fase anterior: comprobaciones locales y simuladas
+## Anexo A. Configuración final del repositorio de pruebas
 
-| Prueba | Tipo | Resultado |
-|---|---|---|
-| Compilación `astro build` | Local | OK (3 páginas) |
-| `.pages.yml`: claves, tipos de campo y rutas | Automática propia (`tests/cms.test.mjs`) | OK. No es el validador oficial |
-| SEO básico (title, description, canonical, og, h1, alt) | Automática sobre `dist/` | OK. `noindex` por ser demo |
-| Enlaces WhatsApp (`wa.me/…?text=`) | Automática + navegador | Generados correctamente. No abiertos en WhatsApp |
-| Responsive 390 / 768 / 1440 px | Local | Sin desbordamiento horizontal. Revisión visual solo a 390 px |
-| Cambios de contenido simulados editando el `.md` | Simulado | Coherentes con lo medido después en el panel real |
-| Precio = "abc" | Simulado | El build falla. En el panel real no se puede escribir «abc»; el riesgo real es el precio vacío guardado como 0 |
-| Volver a versión anterior | Local con `git revert` | OK |
+- `.pages.yml`: `operations` sin borrar ni renombrar servicios; `settings.commit.identity: user`; plantillas de commit con `{userEmail}`; `min: 1` en los precios.
+- `src/content.config.ts`: `precio_desde` y `paquetes[].precio` con `.min(1)`.
+- Workflow `Deploy`: `deploy` depende de `build`; si la compilación falla, no se publica nada (comprobado en los runs #34 y #35).
+- Sitio sin enlaces rotos (4 páginas, 11 recursos con respuesta 200).
 
-## Anexo B. Respuestas a las 7 preguntas (con las pruebas reales)
+## Anexo B. Fuentes
 
-1. **¿Milena puede gestionar sin código?** Textos, precios y visibilidad, sí. Fotos, solo si se resuelve el límite de tamaño (sección 7.1).
-2. **¿Qué puede y qué no puede editar?** Puede: servicios (nombre, descripción, precio, orden, visibilidad, texto, paquetes, galería con texto alternativo, SEO), datos generales y fotos. No ve diseño, código ni `.pages.yml`. Cambios de diseño o campos nuevos los hace AYAVEXA.
-3. **¿Cuánto tarda un cambio?** Medido: 28–53 s con un cambio aislado; 61–83 s con guardados seguidos.
-4. **Muchas fotografías:** el panel no admite fotos de más de ≈3,2 MB y la web las sirve sin optimizar. Hace falta una de las soluciones de la sección 7.1.
-5. **Costes recurrentes:** previsiblemente 0 € con repositorio público (no verificados los precios actuales). Una solución de alojamiento de imágenes podría tener coste.
-6. **Mantenimiento de AYAVEXA:** dependencias, vigilancia del workflow, builds rotos por contenido, cambios de Pages CMS, invitaciones, formación y soporte, y el flujo de fotos.
-7. **¿Frente a WordPress?** Pages CMS encaja para un sitio mayormente fijo con pocas fotos ya optimizadas. Para una fotógrafa que actualiza galerías a menudo, WordPress (o un servicio de galerías) gestiona mejor la subida y el redimensionado de fotos grandes. Decisión condicionada a cómo se resuelva la sección 7.1.
-
-## Anexo C. Limitaciones conocidas de la configuración
-
-- Sin borrador ni previsualización: cada guardado es un commit en `main` y se despliega.
-- La URL de un servicio sale del nombre del fichero (`{primary}`) y no cambia si luego se renombra el servicio.
-- Un servicio oculto deja de existir (404 en su URL).
-- Las rutas guardadas son `/uploads/…`; `src/lib.ts` añade el prefijo de la subcarpeta (verificado en la web publicada).
-- Los colaboradores se guardan en la base de datos de Pages CMS, no en el repo.
+- Pages CMS, documentación oficial: [Operations](https://pagescms.org/docs/configuration/content/operations/), [Collaborators](https://pagescms.org/docs/configuration/collaborators/), [Settings](https://pagescms.org/docs/configuration/settings/), [web](https://pagescms.org/) y código fuente en `github.com/pages-cms/pages-cms` (último commit consultado `6f4e860`, 08/06/2026).
+- Vercel: [límite de 4,5 MB por petición (413)](https://vercel.com/kb/guide/how-to-bypass-vercel-body-size-limit-serverless-functions).
+- GitHub: [límites de GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits), [archivos grandes](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), [facturación de Actions](https://docs.github.com/billing/managing-billing-for-your-products/managing-billing-for-github-actions).
+- Astro: [imágenes](https://docs.astro.build/en/guides/assets).
+- IONOS: [SFTP en hosting](https://www.ionos.com/help/hosting/setting-up-and-managing-ftp-access/connection-details-for-ftp/sftp-in-ionos-web-hosting/), [ayuda FTP/SSH](https://ionos.es/ayuda/hosting/ftp-ssh-archivos-web), [301 con .htaccess](https://www.ionos.com/help/domains/forwarding-a-domain/manually-setting-up-a-301-redirect-using-htaccess), [restauración de copias](https://www.ionos.ca/help/hosting/backup-restore-files/restoring-deletedoverwritten-files-for-linux-web-hosting-packages/).
+- Fotos de prueba: Wikimedia Commons, licencia CC0 (W.carter, Iurie Nistor); imágenes generadas en el navegador; capturas y tarjetas propias de AYAVEXA.
