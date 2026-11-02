@@ -14,8 +14,8 @@ paquetes:
 galeria:
   - imagen: /uploads/modelo-a2-anverso.png
     alt: Tarjeta de AYAVEXA Studio usada como imagen de prueba
-  - imagen: /uploads/newborn-2.svg
-    alt: Imagen ficticia de prueba, tonos verdes
+  - imagen: /uploads/colab-ligera.jpg
+    alt: Imagen de prueba generada (subida por el colaborador)
   - imagen: /uploads/newborn-3.svg
     alt: Imagen ficticia de prueba, tonos rosados
 seo:
