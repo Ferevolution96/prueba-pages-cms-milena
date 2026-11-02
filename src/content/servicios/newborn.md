@@ -1,7 +1,7 @@
 ---
 nombre: Newborn
 descripcion: Sesión tranquila y sin prisas para los primeros días del bebé (texto ficticio).
-precio_desde: 150
+precio_desde: 165
 visible: true
 orden: 1
 paquetes:
