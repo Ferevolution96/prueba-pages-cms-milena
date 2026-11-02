@@ -17,8 +17,8 @@ galeria:
     alt: Imagen ficticia de prueba, tonos rosados
   - imagen: /uploads/prueba-captura-web-1.jpg
     alt: Captura de la web de prueba usada como imagen de prueba
-  - imagen: /uploads/embarazo-3.svg
-    alt: Imagen ficticia de prueba, tonos dorados
+  - imagen: /uploads/flores-ciocana-cc0.jpg
+    alt: Flores silvestres en un prado (foto libre CC0 de prueba, 3,13 MB)
 seo:
   titulo: Sesión de embarazo en Ayamonte (demo)
   descripcion: Página de prueba de un servicio de embarazo con datos ficticios.
