@@ -15,8 +15,8 @@ paquetes:
 galeria:
   - imagen: /uploads/embarazo-1.svg
     alt: Imagen ficticia de prueba, tonos rosados
-  - imagen: /uploads/embarazo-2.svg
-    alt: Imagen ficticia de prueba, tonos violeta
+  - imagen: /uploads/prueba-captura-web-1.jpg
+    alt: Captura de la web de prueba usada como imagen de prueba
   - imagen: /uploads/embarazo-3.svg
     alt: Imagen ficticia de prueba, tonos dorados
 seo:
