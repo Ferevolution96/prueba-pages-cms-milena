@@ -2,7 +2,7 @@
 nombre: Embarazo
 descripcion: Retratos de la espera, en estudio o al aire libre (texto ficticio).
 precio_desde: 120
-visible: false
+visible: true
 orden: 2
 paquetes:
   - nombre: Esencial
