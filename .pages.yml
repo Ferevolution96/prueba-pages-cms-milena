@@ -16,6 +16,10 @@ content:
     filename: "{primary}.md"
     format: yaml-frontmatter
     exclude: ["README.md"]
+    # La clienta puede crear y editar servicios, pero no borrarlos ni renombrarlos (se comprueba en el servidor de Pages CMS).
+    operations:
+      delete: false
+      rename: false
     view:
       primary: nombre
       fields: [nombre, precio_desde, visible]
@@ -41,7 +45,7 @@ content:
         type: number
         required: true
         options:
-          min: 0
+          min: 1
       - name: visible
         label: Visible en la web
         type: boolean
@@ -77,7 +81,7 @@ content:
             type: number
             required: true
             options:
-              min: 0
+              min: 1
           - name: incluye
             label: Qué incluye
             type: text
@@ -149,7 +153,9 @@ settings:
   content:
     merge: true
   commit:
+    # Registra quién hizo cada cambio (nombre y correo del usuario de Pages CMS).
+    identity: user
     templates:
-      create: "contenido: crear {path} (Pages CMS)"
-      update: "contenido: actualizar {path} (Pages CMS)"
-      delete: "contenido: borrar {path} (Pages CMS)"
+      create: "contenido: crear {path} (Pages CMS, {userEmail})"
+      update: "contenido: actualizar {path} (Pages CMS, {userEmail})"
+      delete: "contenido: borrar {path} (Pages CMS, {userEmail})"
