@@ -12,8 +12,8 @@ paquetes:
     precio: 275
     incluye: 25 fotos editadas, galería online, 2 horas de sesión
 galeria:
-  - imagen: /uploads/newborn-1.svg
-    alt: Imagen ficticia de prueba, tonos beige
+  - imagen: /uploads/modelo-a2-anverso.png
+    alt: Tarjeta de AYAVEXA Studio usada como imagen de prueba
   - imagen: /uploads/newborn-2.svg
     alt: Imagen ficticia de prueba, tonos verdes
   - imagen: /uploads/newborn-3.svg
