@@ -1,7 +1,7 @@
 ---
 nombre: Comunión
 descripcion: Servicio de prueba editado desde la cuenta de colaborador (texto ficticio).
-precio_desde: 115
+precio_desde: 0
 visible: true
 orden: 3
 paquetes:
