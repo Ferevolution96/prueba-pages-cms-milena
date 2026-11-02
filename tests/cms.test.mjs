@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { parse } from 'yaml';
 
+const base = (process.env.BASE_PATH || '').replace(/\/$/, ''); // CI sirve bajo /<repo>
 const cfg = parse(readFileSync('.pages.yml', 'utf8'));
 const TIPOS = ['block','boolean','code','date','file','image','number','object','reference','rich-text','select','string','text','uuid'];
 const CAMPO_KEYS = ['name','label','type','component','required','pattern','hidden','readonly','description','options','default','list','fields','blocks','blockKey'];
@@ -42,6 +43,6 @@ test('páginas generadas: SEO y WhatsApp', () => {
 test('las imágenes referenciadas existen en dist', () => {
   for (const f of readdirSync('dist/servicios')) {
     const h = readFileSync(`dist/servicios/${f}/index.html`, 'utf8');
-    for (const [, src] of h.matchAll(/<img[^>]*src="([^"]+)"/g)) assert.ok(existsSync('dist' + src), src);
+    for (const [, src] of h.matchAll(/<img[^>]*src="([^"]+)"/g)) assert.ok(existsSync('dist' + src.replace(base, '')), src);
   }
 });
