@@ -7,12 +7,12 @@ const servicios = defineCollection({
   schema: z.object({
     nombre: z.string(),
     descripcion: z.string(),
-    precio_desde: z.number().min(0),
+    precio_desde: z.number().min(1), // 0 o vacío rompe el build: la web publicada no cambia
     visible: z.boolean().default(true),
     orden: z.number().default(100),
     paquetes: z.array(z.object({
       nombre: z.string(),
-      precio: z.number().min(0),
+      precio: z.number().min(1),
       incluye: z.string(),
     })).default([]),
     galeria: z.array(z.object({
