@@ -1,7 +1,7 @@
 ---
 nombre: Comunión
 descripcion: Servicio nuevo creado en la prueba ficticio y de pruebas.
-precio_desde: 0
+precio_desde: 115
 visible: true
 orden: 3
 paquetes:
