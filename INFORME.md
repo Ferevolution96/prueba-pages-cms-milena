@@ -13,15 +13,15 @@ Repositorio: `ferevolution96/prueba-pages-cms-milena` (público). Panel: app.pag
 | Validaciones | ⚠️ Bloquea texto vacío y precio negativo, pero **un precio vacío se guarda como 0** |
 | Fiabilidad del guardado | ⚠️ Un guardado se perdió sin aviso; la subida de varias fotos a la vez solo subió una |
 | Invitar colaborador sin GitHub | ✅ Invitación por correo enviada |
-| Editar como colaborador | ⏳ Pendiente: necesita que el titular de fercod1496@gmail.com inicie sesión |
+| Editar como colaborador | ✅ Funciona (49 s hasta la web). ⚠️ El commit queda firmado por `pages-cms[bot]`, sin rastro de quién editó, y el colaborador puede borrar servicios |
 
-**Veredicto:** Pages CMS es suficientemente sencillo para el día a día de Milena (cambiar precios, textos y fotos), pero **no se puede entregar tal cual a una fotógrafa**: no admite fotos de cámara y tiene tres fallos que pueden publicar datos erróneos o perder cambios. Ver la sección 6.
+**Veredicto:** Pages CMS es suficientemente sencillo para el día a día de Milena (cambiar precios, textos y fotos), pero **no se puede entregar tal cual a una fotógrafa**: no admite fotos de cámara y tiene tres fallos que pueden publicar datos erróneos o perder cambios. El acceso de colaborador sin GitHub funciona. Ver la sección 6.
 
 ---
 
 ## 1. Método
 
-- Pruebas ejecutadas por Claude desde Chrome (Claude in Chrome) con la sesión de la cuenta propietaria en app.pagescms.org. Horas en Europe/Madrid.
+- Pruebas ejecutadas por Claude desde Chrome (Claude in Chrome) en app.pagescms.org: sesiones 1 y 2 con la cuenta propietaria; sesión 3 con la cuenta de colaborador (fercod1496@gmail.com). El inicio de sesión del colaborador (correo + código y aceptación de los términos de Pages CMS) lo hizo Fernando. Horas en Europe/Madrid.
 - Para cada prueba se registró: hora del guardado, commit en GitHub, ejecución del workflow «Deploy» (duración = creación del run → fin del job deploy) y el **primer momento en que el HTML servido por GitHub Pages contenía el cambio** (consulta sin caché cada 3–5 s), confirmado después recargando la página en el navegador.
 - «Workflow en verde» no se tomó como prueba de publicación: se midió siempre sobre la web.
 - Datos y fotos: todo ficticio o libre. Fotos usadas: capturas de la propia web, dos tarjetas de AYAVEXA (material propio) y fotos CC0 de Wikimedia Commons sin personas (sección 3).
@@ -89,6 +89,20 @@ Las fotos se descargaron en el propio navegador y se subieron una a una por el b
 
 Las dos fotos enviadas por Fernando (manos y pies) **no se usaron**: pesan 81 KB y 151 KB (no sirven para la prueba de peso), muestran a personas reales y no constaba su licencia. Se sustituyeron por las fotos CC0 anteriores, a petición suya.
 
+## 3b. Prueba de colaborador sin cuenta de GitHub (sesión 3, 17:37–17:43)
+
+| Paso | Hora | Resultado |
+|---|---|---|
+| Invitación enviada desde «Collaborators» | 17:04:57 | ✅ Solo pide un correo. Llega un correo en inglés de no-reply@mail.pagescms.org con un enlace de acceso |
+| Abrir el enlace de la invitación | 17:37:39 | ❌ «Invite unavailable – This invitation is no longer available». Probablemente se consumió en un intento anterior de acceso (había un correo de «código temporal» de las 17:22) o caducó; el panel no explica el motivo |
+| Iniciar sesión como colaborador | ~17:40 | ✅ Pantalla «Sign in to Pages CMS» → correo → código de un solo uso enviado al buzón. **No necesita cuenta de GitHub** |
+| Qué ve el colaborador | 17:40 | ✅ Solo el repositorio al que fue invitado (no los demás del propietario). Menú: Servicios, Datos generales y Fotografías; **no** ve Actions, Collaborators ni Configuration |
+| Qué puede hacer | 17:42 | ⚠️ Editar, crear («Add an entry»), **renombrar y borrar** servicios (no se probó a borrar) |
+| Editar la descripción de Comunión | guardado 17:41:27 | ✅ Commit `b0fe799`, run #25 ✅ 51 s, visible en la web 17:42:16 → **49 s**. Confirmado recargando la portada |
+| Autoría del cambio en Git | — | ⚠️ Autor del commit: **`pages-cms[bot]`** (actor del workflow también el bot). Los cambios del propietario aparecen como «Fernando». En el historial de Git **no queda qué colaborador hizo el cambio** |
+
+Al cerrar la sesión del propietario para entrar como colaborador, hay que volver a iniciar sesión con «Sign in with GitHub» para recuperar el acceso de administrador.
+
 ## 4. Errores y dificultades encontrados
 
 1. **Bloqueante para una fotógrafa — límite de ≈3,2 MB por foto** con un error incomprensible («Failed to upload file: 413»).
@@ -103,10 +117,15 @@ Las dos fotos enviadas por Fernando (manos y pies) **no se usaron**: pesan 81 KB
 10. Quitar una foto de la galería no la borra de la biblioteca ni del repositorio.
 11. Un servicio oculto o borrado muestra el 404 genérico de GitHub.
 12. Las imágenes SVG originales no aparecen en la biblioteca «Fotografías» (solo admite jpg/png/webp).
+13. El enlace de invitación dejó de valer («Invite unavailable») sin indicar el motivo ni ofrecer reenviarla; la clienta tendría que entrar por «Sign in» con su correo.
+14. Los cambios de un colaborador se firman como `pages-cms[bot]`: en Git no queda constancia de quién editó. Si hay varias personas editando, no se puede saber quién hizo qué desde GitHub.
+15. Un colaborador puede borrar servicios (con confirmación). No hay un rol de «solo editar».
+16. El correo de invitación, la pantalla de acceso y los avisos están en inglés.
 
 ## 5. No probado o pendiente (no se afirma que funcione)
 
-- **Edición desde la cuenta de colaborador**: la invitación está enviada (17:04:57), pero fercod1496@gmail.com no tiene sesión abierta en el navegador de pruebas y Claude no introduce contraseñas. Requiere que el titular inicie sesión y abra la invitación.
+- Subida de fotos y borrado de servicios desde la cuenta de colaborador.
+- Si Pages CMS muestra en algún sitio (fuera de Git) qué colaborador hizo cada cambio.
 - Lote de 30–50 fotos reales (con el límite actual no se podrían subir sin reducirlas antes).
 - Uso del panel desde el móvil.
 - Restaurar una versión anterior desde el panel.
@@ -129,7 +148,7 @@ Las dos fotos enviadas por Fernando (manos y pies) **no se usaron**: pesan 81 KB
    - Alojar las galerías en un servicio de imágenes con su propio subidor; el CMS guardaría solo la URL.
 2. **Blindar precios**: `precio_desde` y `precio` con `.min(1)` (o vacío explícito → «Consultar»), para que un 0 accidental rompa el build y la web quede como estaba.
 3. **Procedimiento de comprobación** para la clienta: esperar el aviso verde «saved successfully»; si no aparece, volver a guardar; subir las fotos de una en una; mirar la web al minuto.
-4. **Completar la prueba de colaborador** (aceptar invitación, editar, ver qué autor queda en el commit) y decidir la titularidad del repositorio y de las cuentas.
+4. **Acceso de la clienta**: el acceso por correo sin GitHub funciona. Falta decidir la titularidad del repositorio y de las cuentas, explicar a la clienta que entra por «Sign in» con su correo y un código (el enlace de invitación puede caducar), y asumir que puede borrar servicios y que en Git sus cambios aparecen como `pages-cms[bot]`.
 5. Página 404 propia e indicar en el panel que la Foto 1 es la portada del servicio.
 6. Guía breve en español con capturas, traduciendo los mensajes en inglés más comunes.
 7. Avisos de fallo del workflow: GitHub ya envía correos «Run failed» a la cuenta propietaria (se vieron en su bandeja); decidir quién los recibe en AYAVEXA y cómo se revierte un cambio.
