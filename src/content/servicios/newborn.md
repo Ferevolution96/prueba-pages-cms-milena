@@ -9,7 +9,7 @@ paquetes:
     precio: 150
     incluye: 10 fotos editadas, 1 hora de sesión
   - nombre: Completo
-    precio: 250
+    precio: 275
     incluye: 25 fotos editadas, galería online, 2 horas de sesión
 galeria:
   - imagen: /uploads/newborn-1.svg
