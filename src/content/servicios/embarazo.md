@@ -2,7 +2,7 @@
 nombre: Embarazo
 descripcion: Retratos de la espera en estudio o al aire libre. Editado en la
   prueba 2 (texto ficticio).
-precio_desde: 12
+precio_desde: 120
 visible: true
 orden: 2
 paquetes:
