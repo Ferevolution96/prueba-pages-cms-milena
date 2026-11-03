@@ -17,7 +17,7 @@ galeria:
     alt: Tarjeta de AYAVEXA Studio usada como imagen de prueba
   - imagen: /uploads/colab-ligera.jpg
     alt: Imagen de prueba generada (subida por el colaborador)
-  - imagen: /uploads/newborn-3.svg
+  - imagen: /uploads/prueba-captura-web-1.jpg
     alt: Imagen ficticia de prueba, tonos rosados
 seo:
   titulo: Sesión newborn en Ayamonte (demo)
