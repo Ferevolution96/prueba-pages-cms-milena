@@ -1,13 +1,12 @@
 ---
 nombre: Newborn
-descripcion: Sesión tranquila y sin prisas para los primeros días del bebé.
-  Incluye mantas y accesorios (texto ficticio).
+descripcion: Sesión tranquila y sin prisas para los primeros días del bebé (texto ficticio).
 precio_desde: 165
 visible: true
 orden: 1
 paquetes:
   - nombre: Mini
-    precio: 149
+    precio: 165
     incluye: 10 fotos editadas, 1 hora de sesión
   - nombre: Completo
     precio: 275
@@ -17,7 +16,7 @@ galeria:
     alt: Tarjeta de AYAVEXA Studio usada como imagen de prueba
   - imagen: /uploads/colab-ligera.jpg
     alt: Imagen de prueba generada (subida por el colaborador)
-  - imagen: /uploads/prueba-captura-web-1.jpg
+  - imagen: /uploads/newborn-3.svg
     alt: Imagen ficticia de prueba, tonos rosados
 seo:
   titulo: Sesión newborn en Ayamonte (demo)
