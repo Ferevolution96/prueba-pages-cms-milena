@@ -9,10 +9,10 @@ paquetes:
     precio: 120
     incluye: 8 fotos editadas, 45 minutos
   - nombre: Pareja
-    precio: 190
+    precio: 200
     incluye: 15 fotos editadas, incluye pareja, 1 hora
 galeria:
-  - imagen: /uploads/embarazo-1.svg
+  - imagen: /uploads/colab-ligera.jpg
     alt: Imagen ficticia de prueba, tonos rosados
   - imagen: /uploads/prueba-captura-web-1.jpg
     alt: Captura de la web de prueba usada como imagen de prueba
