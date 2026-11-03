@@ -11,5 +11,7 @@ paquetes:
 seo:
   titulo: "Fotos de niño con perro "
   descripcion: "Fotos familiares de niño con perros "
+galeria:
+  - imagen: /uploads/modelo-a2-reverso.png
 ---
 Fotos de niños con su familia 
