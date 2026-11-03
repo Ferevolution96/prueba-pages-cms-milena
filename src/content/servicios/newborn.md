@@ -6,7 +6,7 @@ visible: true
 orden: 1
 paquetes:
   - nombre: Mini
-    precio: 165
+    precio: 149
     incluye: 10 fotos editadas, 1 hora de sesión
   - nombre: Completo
     precio: 275
